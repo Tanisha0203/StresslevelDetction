@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stress Detector API</title>
+  <style>
+    /* Reset some basic styles */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f7f6;
+      color: #333;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      background-color: #4CAF50;
+      color: white;
+      padding: 8px;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    /* Flex container for main layout */
+    .main-container {
+      display: flex;
+      flex: 1;
+      flex-direction: row;
+      height: calc(100vh - 80px); /* To account for header height */
+    }
+
+    /* Left side for stress chart */
+    .chart-container {
+      flex: 1;
+      background-color: #fff;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-right: 2px solid #ddd;
+    }
+
+    .chart {
+      width: 80%;
+      background-color: #fff;
+      /* border: 2px solid #ddd; */
+      border-radius: 8px;
+      /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .level {
+      display: flex;
+      justify-content: space-around;
+      font-size: 1.1rem;
+      margin-top: 20px;
+    }
+
+    .level div {
+      text-align: center;
+      width: 30%;
+    }
+
+    .level div span {
+      font-weight: bold;
+      color: #555;
+    }
+
+    /* Right side for camera output */
+    .camera-container {
+      flex: 1;
+      background-color: #fff;
+      display: block;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    #bg {
+      width: 100%;
+      height: auto;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Full screen section for instructions */
+    .instructions {
+      background-color: #fff;
+      padding: 20px;
+      margin-top: auto;
+      font-size: 1.1rem;
+      /* box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1); */
+      /* border-top: 2px solid #ddd; */
+    }
+
+    .instructions h3 {
+      color: #4CAF50;
+      font-size: 1.8rem;
+    }
+
+    .instructions ul {
+      list-style-type: none;
+      padding-left: 20px;
+    }
+
+    .instructions ul li {
+      margin: 10px 0;
+    }
+
+    /* Contributor Cards Section */
+    .contributors-section {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      background-color: #f4f7f6;
+      border-top: 2px solid #ddd;
+    }
+
+    .contributor-card {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      width: 280px;
+      padding: 20px;
+      margin: 0 20px;
+      text-align: center;
+      box-shadow: 0 4px 9px rgba(0, 0, 0, 0.1);
+    }
+
+     .contributor-card img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin-bottom: 15px;
+    } 
+
+    .contributor-card h4 {
+      font-size: 1.2rem;
+      color: #333;
+    }
+
+    .contributor-card p {
+      font-size: 1rem;
+      color: #555;
+      margin: 5px 0;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .main-container {
+        flex-direction: column;
+      }
+      .chart-container,
+      .camera-container {
+        flex: none;
+        width: 100%;
+        margin: 10px 0;
+      }
+
+      .contributors-section {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .contributor-card {
+        margin-bottom: 20px;
+      }
+    }
+    .conti{
+      text-align: center;
+      font-weight: 200;
+      font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Stress Detector </h1>
+  </header>
+
+  <div class="main-container">
+    <!-- Left side: Stress level chart -->
+    <div class="chart-container">
+      <img src="https://www.meditation-magic.com/uploads/1/4/7/1/14711400/published/pss-stress-level.jpg?1608947124" alt="">
+    </div>
+
+    <!-- Right side: Camera output -->
+    <div class="camera-container">
+      <h3>🔴Live Stress detecting</h3>
+      <img id="bg" src="{{ url_for('predict') }}" alt="Stress Detection Result">
+      
+    </div>
+  </div>
+<br>
+<br>
+
+  <!-- Full-screen section for stress avoidance tips -->
+  <div class="instructions">
+    <h3>Stress Avoidance Tips</h3>
+    <ul>
+      <li><strong>Exercise Regularly:</strong> Physical activity can help lower stress hormones and improve your mood.</li>
+      <li><strong>Practice Deep Breathing:</strong> Deep breathing exercises can help calm your nervous system.</li>
+      <li><strong>Take Breaks:</strong> Step away from stressful situations to clear your mind and regain focus.</li>
+      <li><strong>Get Enough Sleep:</strong> Adequate sleep is vital for mental and physical well-being.</li>
+      <li><strong>Connect with Others:</strong> Talking to a friend or family member can help alleviate stress.</li>
+      <li><strong>Stay Organized:</strong> Managing tasks effectively can reduce feelings of being overwhelmed.</li>
+    </ul>
+  </div>
+
+
+
+
+
+
+
+
+  <h2 class="conti">contributors</h2>
+  <!-- Contributor Cards Section -->
+  <div class="contributors-section">
+    
+    <div class="contributor-card">
+      <img src="https://i.imghippo.com/files/rnQ9003w.jpg" alt="Contributor 0 Image">
+      <h4>Shreeya Sharma</h4>
+      <p>B-Tech(IT) Final year</p>
+      <p>E-ID: EN21IT301106</p>
+    </div>
+    <div class="contributor-card">
+      <img src="https://i.imghippo.com/files/fAHA1478rZc.jpg" alt="Contributor 1 Image">
+      <h4>Tanisha Bansal</h4>
+      <p>B-Tech(IT) Final year</p>
+      <p>E-ID: EN21IT301113</p>
+    </div>
+    <div class="contributor-card">
+      <img src="https://i.imghippo.com/files/SKI4003Px.jpg" alt="Contributor 2 Image">
+      <h4>Soumya saxena</h4>
+      <p>B-Tech(IT) Final year</p>
+      <p>E-ID: EN21IT301110</p>
+    </div>
+  </div>
+
+</body>
+</html>

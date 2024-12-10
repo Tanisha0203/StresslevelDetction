@@ -1,0 +1,83 @@
+import dlib
+import cv2
+from keras.models import load_model
+from keras.preprocessing.image import img_to_array
+from scipy.spatial import distance as dist
+import imutils
+from imutils import face_utils
+import numpy as np
+
+# Global variables and imports should be declared first
+global points, points_lip, emotion_classifier, detector, predictor
+
+# Define all helper functions first
+def ebdist(leye, reye):
+    eyedist = dist.euclidean(leye, reye)
+    points.append(int(eyedist))
+    return eyedist
+
+def lpdist(l_lower, l_upper):
+    lipdist = dist.euclidean(l_lower, l_upper)
+    points_lip.append(int(lipdist))
+    return lipdist
+
+def emotion_finder(faces, frame):
+    EMOTIONS = ["angry", "disgust", "scared", "happy", "sad", "surprised", "neutral"]
+    x, y, w, h = face_utils.rect_to_bb(faces)
+    frame = frame[y:y+h, x:x+w]
+    roi = cv2.resize(frame, (64, 64))
+    roi = roi.astype("float") / 255.0
+    roi = img_to_array(roi)
+    roi = np.expand_dims(roi, axis=0)
+    preds = emotion_classifier.predict(roi)[0]
+    emotion_probability = np.max(preds)
+    label = EMOTIONS[preds.argmax()]
+    if label in ['scared', 'sad', 'angry']:
+        label = 'Stressed'
+    else:
+        label = 'Not Stressed'
+    return label
+
+def normalize_values(points, disp, points_lip, dis_lip):
+    normalize_value_lip = abs(dis_lip - np.min(points_lip)) / abs(np.max(points_lip) - np.min(points_lip))
+    normalized_value_eye = abs(disp - np.min(points)) / abs(np.max(points) - np.min(points))
+    normalized_value = (normalized_value_eye + normalize_value_lip) / 2
+    stress_value = (np.exp(-normalized_value))
+    if stress_value >= 0.65:
+        stress_label = "High Stress"
+    else:
+        stress_label = "Low Stress"
+    return stress_value, stress_label
+
+# Load models and data
+detector = dlib.get_frontal_face_detector()
+predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+emotion_classifier = load_model("_mini_XCEPTION.102-0.66.hdf5", compile=False)
+points = []
+points_lip = []
+
+# Class definition should come after function definitions
+class VideoCamera(object):
+    def __init__(self):
+        self.video = cv2.VideoCapture(0)
+        
+    def __del__(self):
+        self.video.release()
+        
+    def get_frame(self):
+        ret, frame = self.video.read()
+        frame = cv2.flip(frame, 1)
+        frame = imutils.resize(frame, width=500, height=500)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        
+        detections = detector(gray, 0)
+        for detection in detections:
+            emotion = emotion_finder(detection, gray)
+            cv2.putText(frame, emotion, (10, 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            shape = predictor(gray, detection)
+            shape = face_utils.shape_to_np(shape)
+            
+            # Additional processing...
+        
+        ret, jpeg = cv2.imencode('.jpg', frame)
+        return jpeg.tobytes()
